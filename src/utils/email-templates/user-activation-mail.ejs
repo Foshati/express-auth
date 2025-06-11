@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Activation | Digifa</title>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333333;
+        }
+
+        .email-wrapper {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            background: #206FEB;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .email-header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 26px;
+        }
+
+        .email-body {
+            padding: 30px;
+        }
+
+        .otp-code {
+            font-size: 32px;
+            letter-spacing: 3px;
+            color: #0066cc;
+            background: #f8f9fa;
+            padding: 15px 30px;
+            margin: 25px 0;
+            border-radius: 6px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .notice {
+            color: #dc3545;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .email-footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+            font-size: 12px;
+            color: #666666;
+        }
+
+        .email-footer a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        @media screen and (max-width: 600px) {
+            .email-wrapper {
+                margin: 0;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-wrapper">
+        <div class="email-header">
+            <h1>Welcome to Digifa</h1>
+        </div>
+
+        <div class="email-body">
+            <p>Hello <strong>
+                    <%= name %>
+                </strong>,</p>
+
+            <p>Thank you for registering with Digifa. To activate your account, please use the following One-Time
+                Password (OTP):</p>
+
+            <div class="otp-code">
+                <%= otp %>
+            </div>
+
+            <p class="notice">⚠️ This code will expire in 5 minutes</p>
+
+            <p>If you didn't request this code, please ignore this email or contact our support team immediately.</p>
+
+            <p>Best regards,<br>
+                The Digifa Team</p>
+        </div>
+
+        <div class="email-footer">
+            <p>Need help? Contact us at <a href="mailto:support@digifa.com">support@digifa.com</a></p>
+            <p>© <%= new Date().getFullYear() %> Digifa. All rights reserved.</p>
+            <p><a href="https://www.digifa.com">Visit our website</a></p>
+        </div>
+    </div>
+</body>
+
+</html>
