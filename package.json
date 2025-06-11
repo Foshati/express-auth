@@ -4,7 +4,7 @@
   "description": "Authentication service for Digifa",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/main.js",
     "db:generate": "prisma generate",
