@@ -4,9 +4,9 @@ import { checkOtpRestrictions, sendOtp, trackOtpRequests, verifyForgotPasswordOt
 import bcrypt from "bcryptjs";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
-import { prisma } from "../../libs/prisma";
-import { AuthError, ValidationError } from "middleware/error-handler";
-import { AuthenticatedRequest } from "types";
+import { prisma } from "../libs/prisma";
+import { ValidationError, AuthError } from "../middleware/error-handler";
+import { AuthenticatedRequest } from "../types";
 
 //Register a new user
 export const userRegistration = async (req: Request, res: Response, next: NextFunction) => {
@@ -57,7 +57,7 @@ export const userRegistration = async (req: Request, res: Response, next: NextFu
         const trackError = await trackOtpRequests(email, next);
         if (trackError) return;
 
-        await sendOtp(name, email, "user-activation-mail");
+        await sendOtp(name, email);
 
         res.status(200).json({
             message: "OTP sent to your email, Please verify your account"
@@ -120,8 +120,8 @@ export const userLogin = async (req: Request, res: Response, next: NextFunction)
         }
 
         // Generate access token and refresh token
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "15m" });
-        const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: "7d" });
+        const accessToken = jwt.sign({ id: user.id, role: "user" }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "15m" });
+        const refreshToken = jwt.sign({ id: user.id, role: "user" }, process.env.REFRESH_TOKEN_SECRET as string, { expiresIn: "7d" });
         // store the refresh token and access token in a http-only secure cookie
         setCookie(res, "access_token", accessToken);
         setCookie(res, "refresh_token", refreshToken);
@@ -185,6 +185,7 @@ export const getUser = async (req: AuthenticatedRequest, res: Response, next: Ne
                 success: false,
                 message: 'User not authenticated'
             });
+            return;
         }
 
         res.status(200).json({
@@ -214,7 +215,7 @@ export const userForgotPassword = async (req: Request, res: Response, next: Next
         const trackError = await trackOtpRequests(email, next);
         if (trackError) return;
 
-        await sendOtp(user.name, email, "forgot-password");
+        await sendOtp(user.name, email);
 
         res.status(200).json({
             success: true,
@@ -278,7 +279,7 @@ export const resendOtp = async (req: Request, res: Response, next: NextFunction)
         if (trackError) return;
 
         const Name = name || "Dear user";
-        await sendOtp(Name, email, "user-activation-mail");
+        await sendOtp(Name, email);
 
         res.status(200).json({
             success: true,

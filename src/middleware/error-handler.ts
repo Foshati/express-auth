@@ -1,25 +1,91 @@
 import { Request, Response, NextFunction } from 'express';
+import { z } from 'zod';
 
-export class ValidationError extends Error {
-    constructor(message: string) {
+// Base Error Class
+export class AppError extends Error {
+    public statusCode: number;
+    public details?: any;
+
+    constructor(message: string, statusCode: number, details?: any) {
         super(message);
+        this.name = this.constructor.name;
+        this.statusCode = statusCode;
+        this.details = details;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+// Specific Error Classes
+export class ValidationError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 400, details);
         this.name = 'ValidationError';
     }
 }
 
-export class AuthenticationError extends Error {
-    constructor(message: string) {
-        super(message);
+export class AuthError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 401, details);
+        this.name = 'AuthError';
+    }
+}
+
+export class AuthenticationError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 401, details);
         this.name = 'AuthenticationError';
     }
 }
 
-export class AuthorizationError extends Error {
-    constructor(message: string) {
-        super(message);
+export class AuthorizationError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 403, details);
         this.name = 'AuthorizationError';
     }
 }
+
+export class ForbiddenError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 403, details);
+        this.name = 'ForbiddenError';
+    }
+}
+
+export class DatabaseError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 500, details);
+        this.name = 'DatabaseError';
+    }
+}
+
+export class RateLimitError extends AppError {
+    constructor(message: string, details?: any) {
+        super(message, 429, details);
+        this.name = 'RateLimitError';
+    }
+}
+
+// Validation Middleware using Zod
+export const validate = (schema: z.ZodSchema<any>) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const parsed = schema.parse(req.body);
+            req.body = parsed;
+            next();
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const errorMessages = error.errors.map(err => ({
+                    field: err.path.join('.'),
+                    message: err.message
+                }));
+                
+                next(new ValidationError('Validation failed', errorMessages));
+            } else {
+                next(new ValidationError('Invalid request data'));
+            }
+        }
+    };
+};
 
 export const errorHandler = (
     error: Error,
@@ -34,11 +100,12 @@ export const errorHandler = (
         return res.status(400).json({
             success: false,
             message: error.message,
-            error: 'Validation Error'
+            error: 'Validation Error',
+            details: error.details
         });
     }
 
-    if (error instanceof AuthenticationError) {
+    if (error instanceof AuthError || error instanceof AuthenticationError) {
         return res.status(401).json({
             success: false,
             message: error.message,
@@ -46,11 +113,27 @@ export const errorHandler = (
         });
     }
 
-    if (error instanceof AuthorizationError) {
+    if (error instanceof AuthorizationError || error instanceof ForbiddenError) {
         return res.status(403).json({
             success: false,
             message: error.message,
             error: 'Authorization Error'
+        });
+    }
+
+    if (error instanceof RateLimitError) {
+        return res.status(429).json({
+            success: false,
+            message: error.message,
+            error: 'Rate Limit Error'
+        });
+    }
+
+    if (error instanceof DatabaseError) {
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+            error: 'Database Error'
         });
     }
 

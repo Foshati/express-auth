@@ -2,17 +2,8 @@ import crypto from "crypto";
 import { sendEmail } from "../utils/sendMail";
 import { NextFunction, Request, Response } from "express";
 import { prisma } from "../libs/prisma";
-
-// Redis client import - با مسیر درست
-const { redisClient } = require('../libs/redis');
-
-// Custom Error Class - اگر middleware/error-handler وجود ندارد
-class ValidationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'ValidationError';
-    }
-}
+import { redisClient } from '../libs/redis';
+import { ValidationError } from "../middleware/error-handler";
 
 type RegistrationDataType = {
     name: string;
@@ -73,12 +64,12 @@ export const trackOtpRequests = async (email: string, next: NextFunction): Promi
         const otpRequests = parseInt((await redisClient.get(otpRequestKey)) || "0", 10);
 
         if (otpRequests >= 2) {
-            await redisClient.set(`otp_spam_lock:${email}`, "locked", "EX", 3600);
+            await redisClient.set(`otp_spam_lock:${email}`, "locked", { ex: 3600 });
             next(new ValidationError("Too many OTP requests. Please wait 1 hour before requesting again"));
             return true;
         }
 
-        await redisClient.set(otpRequestKey, (otpRequests + 1).toString(), "EX", 3600);
+        await redisClient.set(otpRequestKey, (otpRequests + 1).toString(), { ex: 3600 });
         return false;
     } catch (error) {
         console.error('Redis error in trackOtpRequests:', error);
@@ -87,17 +78,17 @@ export const trackOtpRequests = async (email: string, next: NextFunction): Promi
     }
 };
 
-export const sendOtp = async (name: string, email: string, template: string): Promise<void> => {
+export const sendOtp = async (name: string, email: string): Promise<void> => {
     try {
         // Update to generate 4-digit OTP to match schema validation
         const otp = crypto.randomInt(1000, 9999).toString();
 
         // Send verification email
-        await sendEmail(email, "Verify your email", template, { name, otp });
+        await sendEmail(email, "Verify your email", "user-activation-mail", { name, otp });
 
         // Store OTP and cooldown in redisClient
-        await redisClient.set(`otp:${email}`, otp, "EX", 300);
-        await redisClient.set(`otp_cooldown:${email}`, "true", "EX", 60);
+        await redisClient.set(`otp:${email}`, otp, { ex: 300 });
+        await redisClient.set(`otp_cooldown:${email}`, "true", { ex: 60 });
     } catch (error) {
         console.error('Error in sendOtp:', error);
         throw new ValidationError("Error sending OTP. Please try again later.");
@@ -116,11 +107,11 @@ export const verifyOtp = async (email: string, otp: string): Promise<void> => {
 
         if (storedOtp !== otp) {
             if (failedAttempts >= 2) {
-                await redisClient.set(`otp_lock:${email}`, "locked", "EX", 1800);
+                await redisClient.set(`otp_lock:${email}`, "locked", { ex: 1800 });
                 await redisClient.del(failedAttemptsKey);
                 throw new ValidationError("Too many failed attempts. Account locked for 30 minutes");
             }
-            await redisClient.set(failedAttemptsKey, (failedAttempts + 1).toString(), "EX", 300);
+            await redisClient.set(failedAttemptsKey, (failedAttempts + 1).toString(), { ex: 300 });
             throw new ValidationError(`Incorrect OTP, you have ${2 - failedAttempts} attempt(s) left`);
         }
 
@@ -152,7 +143,7 @@ export const handleForgotPassword = async (req: Request, res: Response, next: Ne
         if (hasSpamRestrictions) return;
 
         // Generate OTP and send email
-        await sendOtp(user.name, user.email, "forgot-password-user-mail");
+        await sendOtp(user.name, user.email);
 
         res.status(200).json({ message: "OTP sent to email, please verify your account" });
     } catch (error) {
