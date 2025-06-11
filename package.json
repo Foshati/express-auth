@@ -10,10 +10,12 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "doc":"ts-node src/scalar.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.9.0",
+    "@scalar/express-api-reference": "^0.8.3",
     "@upstash/redis": "^1.35.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -22,6 +24,7 @@
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.7",
+    "swagger-autogen": "^2.23.7",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+// apps/auth-service/src/main.ts
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -5,9 +6,10 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
-
-import { errorMiddleware } from "./middleware/error-middleware";
 import router from "./routes/auth.routes";
+import { errorMiddleware } from "./middleware/error-middleware";
+
+
 
 const app = express();
 
@@ -35,8 +37,33 @@ app.get("/api/v1/health", (_req, res) => {
 // Mount auth routes under /api/v1
 app.use("/", router);
 
+// Optional: API docs via Scalar
+async function setupApiReference() {
+  try {
+    const { apiReference } = await import("@scalar/express-api-reference");
+    const scalarDocument = require(path.join(__dirname, "scalar-output.json"));
+    
+    // اضافه کردن basePath به document
+    scalarDocument.basePath = "/api/v1";
+    
+    app.use(
+      "/api/v1/docs",
+      apiReference({
+        content: scalarDocument,
+        theme: "purple",
+      })
+    );
+    console.log(
+      `API Reference available at http://localhost:${process.env.PORT || 8000}/api/v1/docs`
+    );
+  } catch (err) {
+    console.warn("No API Reference configured:", err);
+  }
+}
+setupApiReference();
+
 // Global error handler
-app.use(errorMiddleware);
+app.use(errorMiddleware as unknown as express.ErrorRequestHandler);
 
 const PORT = parseInt(process.env.PORT || "8000", 10);
 const SERVER = app.listen(PORT, () => {

@@ -57,7 +57,7 @@ export const userRegistration = async (req: Request, res: Response, next: NextFu
         const trackError = await trackOtpRequests(email, next);
         if (trackError) return;
 
-        await sendOtp(name, email);
+        await sendOtp(name, email, "user-activation-mail");
 
         res.status(200).json({
             message: "OTP sent to your email, Please verify your account"
@@ -215,7 +215,7 @@ export const userForgotPassword = async (req: Request, res: Response, next: Next
         const trackError = await trackOtpRequests(email, next);
         if (trackError) return;
 
-        await sendOtp(user.name, email);
+        await sendOtp(user.name, email, "forgot-password-user-mail");
 
         res.status(200).json({
             success: true,
@@ -279,7 +279,7 @@ export const resendOtp = async (req: Request, res: Response, next: NextFunction)
         if (trackError) return;
 
         const Name = name || "Dear user";
-        await sendOtp(Name, email);
+        await sendOtp(Name, email, "user-activation-mail");
 
         res.status(200).json({
             success: true,
