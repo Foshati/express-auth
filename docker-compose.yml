@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - CLIENT_URL=http://localhost:3000
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+
+  # در آینده می‌توان سرویس‌های دیگر مثل Redis را اضافه کرد
+  # redis:
+  #   image: redis:alpine
+  #   ports:
+  #     - "6379:6379" 

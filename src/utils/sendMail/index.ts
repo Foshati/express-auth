@@ -26,11 +26,7 @@ async function renderTemplate(
   data: Record<string, unknown>
 ): Promise<string> {
   // Path in dist after build
-  const distPath = path.resolve(
-    __dirname,
-    '../email-templates',
-    `${templateName}.ejs`
-  );
+  const distPath = path.resolve(__dirname, '../email-templates', `${templateName}.ejs`);
   // Path in source during development
   const srcPath = path.resolve(
     process.cwd(),
@@ -48,7 +44,7 @@ async function renderTemplate(
     throw new Error(`Email template not found in dist or src: tried ${distPath} and ${srcPath}`);
   }
 
-//   console.log('Rendering EJS template from:', templatePath);
+  //   console.log('Rendering EJS template from:', templatePath);
   return await ejs.renderFile(templatePath, data, { async: true });
 }
 
