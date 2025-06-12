@@ -1,84 +1,60 @@
 # Auth Service
 
-سرویس احراز هویت با Node.js و TypeScript
+This is an authentication service for Digifa, built with Node.js, Express, Prisma, and TypeScript.
 
-## ویژگی‌ها
+## Features
 
-- احراز هویت با JWT
-- مدیریت کاربران
-- API مستند شده با Scalar
-- سیستم Cache
-- Compression برای بهبود عملکرد
-- Rate Limiting برای امنیت
-- Docker support
-- تست‌های خودکار
+- User registration and login
+- Email verification with OTP
+- Password reset
+- JWT authentication
+- Rate limiting and security middleware
+- Redis integration for OTP and session management
 
-## پیش‌نیازها
+## Getting Started
 
-- Node.js 18 یا بالاتر
-- npm یا yarn
-- Docker (اختیاری)
+### Prerequisites
 
-## نصب و راه‌اندازی
+- Node.js v22+
+- npm
+- PostgreSQL (or your preferred database)
 
-1. نصب وابستگی‌ها:
-```bash
-npm install
-```
+### Installation
 
-2. تنظیم متغیرهای محیطی:
-```bash
-cp .env.example .env
-```
+1. Clone the repository:
+   ```sh
+   git clone <repo-url>
+   cd auth-service
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Set up your environment variables in a `.env` file (see `.env.example`).
+4. Run database migrations:
+   ```sh
+   npx prisma migrate dev
+   ```
+5. Start the development server:
+   ```sh
+   npm run dev
+   ```
 
-3. اجرای در حالت توسعه:
-```bash
-npm run dev
-```
+## Scripts
 
-4. اجرا با Docker:
-```bash
-docker-compose up
-```
+- `npm run dev` — Start the server in development mode
+- `npm run build` — Build the project
+- `npm start` — Run the built project
+- `npm test` — Run tests
 
-## تست‌ها
+## Testing
 
-```bash
-# اجرای همه تست‌ها
+This project uses Jest for testing. To run tests:
+
+```sh
 npm test
-
-# اجرای تست‌ها با coverage
-npm run test:coverage
 ```
 
-## API Documentation
+## License
 
-مستندات API در آدرس زیر در دسترس است:
-```
-http://localhost:8000/api/v1/docs
-```
-
-## ساختار پروژه
-
-```
-src/
-  ├── controllers/    # کنترلرهای API
-  ├── middleware/     # middleware‌ها
-  ├── routes/         # مسیرهای API
-  ├── services/       # سرویس‌های کسب و کار
-  ├── utils/          # توابع کمکی
-  ├── types/          # تعاریف TypeScript
-  └── server.ts       # نقطه ورود برنامه
-```
-
-## مشارکت
-
-1. Fork کنید
-2. Branch جدید ایجاد کنید (`git checkout -b feature/amazing-feature`)
-3. تغییرات را commit کنید (`git commit -m 'Add some amazing feature'`)
-4. به Branch خود push کنید (`git push origin feature/amazing-feature`)
-5. Pull Request ایجاد کنید
-
-## لایسنس
-
-MIT 
+MIT
