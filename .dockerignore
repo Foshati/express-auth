@@ -1,7 +1,25 @@
+# Ignore all development-related files and directories
 node_modules
 npm-debug.log
 coverage
 .git
 .env
 *.log
-!scalar-output.json
+src/
+__tests__/
+types/ # Assuming types are not needed at runtime or are bundled into dist
+test/ # Assuming test directory, if it exists
+tsconfig.json
+jest.config.json
+.eslintrc.json
+.prettierrc
+.husky/
+.github/
+Dockerfile
+docker-compose.yml
+README.md
+swagger-ui/
+
+# Keep essential production files and directories
+!/dist
+!/prisma/schema.prisma
