@@ -42,10 +42,10 @@ async function setupApiReference() {
   try {
     const { apiReference } = await import("@scalar/express-api-reference");
     const scalarDocument = require(path.join(__dirname, "scalar-output.json"));
-    
+
     // اضافه کردن basePath به document
     scalarDocument.basePath = "/api/v1";
-    
+
     app.use(
       "/api/v1/docs",
       apiReference({

@@ -1,9 +1,9 @@
 import crypto from "crypto";
 import { sendEmail } from "../utils/sendMail";
 import { NextFunction, Request, Response } from "express";
-import { prisma } from "../libs/prisma";
 import { ValidationError } from "../middleware/error-handler";
-import redisClient from "libs/redis";
+import { redisClient } from "../libs/redis";
+import { prisma } from "../libs/prisma";
 
 
 

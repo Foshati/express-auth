@@ -4,9 +4,9 @@ import { checkOtpRestrictions, sendOtp, trackOtpRequests, verifyForgotPasswordOt
 import bcrypt from "bcryptjs";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { setCookie } from "../utils/cookies/setCookie";
-import { prisma } from "../libs/prisma";
 import { ValidationError, AuthError } from "../middleware/error-handler";
 import { AuthenticatedRequest } from "../types";
+import { prisma } from "../libs/prisma";
 
 //Register a new user
 export const userRegistration = async (req: Request, res: Response, next: NextFunction) => {
