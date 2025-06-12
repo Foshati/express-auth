@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
@@ -67,7 +68,7 @@ export class RateLimitError extends AppError {
 
 // Validation Middleware using Zod
 export const validate = (schema: z.ZodSchema<any>) => {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
       const parsed = schema.parse(req.body);
       req.body = parsed;
@@ -87,7 +88,7 @@ export const validate = (schema: z.ZodSchema<any>) => {
   };
 };
 
-export const errorHandler = (error: Error, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (error: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Error:', error.message);
   console.error('Stack:', error.stack);
 

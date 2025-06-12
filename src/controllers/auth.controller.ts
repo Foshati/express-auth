@@ -41,10 +41,9 @@ export const userRegistration = async (req: Request, res: Response, next: NextFu
       });
       return;
     }
-    if (password.length < 8) {
+    if (typeof password !== 'string' || password.length < 8) {
       res.status(400).json({
-        success: false,
-        message: 'Password must be at least 8 characters long',
+        message: 'Password must be a string and at least 8 characters long.',
       });
       return;
     }

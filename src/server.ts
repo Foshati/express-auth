@@ -5,7 +5,6 @@ dotenv.config();
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import path from 'path';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import compression from 'compression';
@@ -13,11 +12,14 @@ import router from './routes/auth.routes';
 import { errorMiddleware } from './middleware/error-middleware';
 import { cacheMiddleware } from './middleware/cache-middleware';
 import logger from './utils/logger';
+import fs from 'fs/promises';
+import csurf from 'csurf';
 
 const app = express();
 
 // Security middleware
 app.use(helmet());
+app.use(csurf());
 
 // Compression middleware
 app.use(compression());
@@ -57,9 +59,16 @@ app.use('/', cacheMiddleware(), router);
 
 // Optional: API docs via Scalar
 async function setupApiReference() {
+  // فقط در محیط development مستندات را نمایش بده
+  if (process.env.NODE_ENV === 'production') {
+    logger.info('API Reference disabled in production');
+    return;
+  }
+
   try {
     const { apiReference } = await import('@scalar/express-api-reference');
-    const scalarDocument = require(path.join(__dirname, 'scalar-output.json'));
+    const scalarContent = await fs.readFile('./src/scalar-output.json', 'utf-8');
+    const scalarDocument = JSON.parse(scalarContent);
 
     // اضافه کردن basePath به document
     scalarDocument.basePath = '/api/v1';

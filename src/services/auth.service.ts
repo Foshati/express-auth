@@ -86,7 +86,7 @@ export const trackOtpRequests = async (email: string, next: NextFunction): Promi
   }
 };
 
-export const sendOtp = async (name: string, email: string, p0?: string): Promise<void> => {
+export const sendOtp = async (name: string, email: string, _p0?: string): Promise<void> => {
   try {
     // Update to generate 4-digit OTP to match schema validation
     const otp = crypto.randomInt(1000, 9999).toString();
