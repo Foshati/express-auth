@@ -28,20 +28,6 @@ const router: Router = express.Router();
 
 // Auth Routes
 router.post('/api/v1/auth/register', validate(RegistrationSchema), userRegistration);
-
-/**
- * POST /api/v1/auth/verify
- * @summary Verify OTP
- * @description This endpoint verifies the One-Time Password (OTP) sent to the user's email.
- * @param {object} request.body - User verification details
- * @property {string} request.body.email.required - User's email address
- * @property {string} request.body.otp.required - One-time password (4 digits)
- * @example request.body
- * {
- *   "email": "user@example.com",
- *   "otp": "1234"
- * }
- */
 router.post('/api/v1/auth/verify', validate(OtpVerificationSchema), userVerify);
 router.post('/api/v1/auth/login', validate(LoginSchema), userLogin);
 router.post('/api/v1/auth/refresh-token', userRefreshToken);

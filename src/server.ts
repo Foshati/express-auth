@@ -14,7 +14,6 @@ import { cacheMiddleware } from './middleware/cache-middleware';
 import logger from './utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from './swagger-ui/swagger-output.json';
-import csurf from 'csurf';
 import session from 'express-session';
 import fs from 'fs';
 import path from 'path';
@@ -24,10 +23,12 @@ const app = express();
 // Security middleware
 app.use(helmet());
 
+// Cookie parser
+app.use(cookieParser());
+
 // Body parsers
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
-app.use(cookieParser());
 
 // Session middleware
 app.use(
@@ -39,16 +40,13 @@ app.use(
   })
 );
 
-// CSRF middleware
-app.use(csurf({ cookie: true }));
-
 // Compression middleware
 app.use(compression());
 
-// Rate limiting
+// Rate limiting - only for API routes
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  max: 100,
   message: 'Too many requests from this IP, please try again later.',
 });
 app.use('/api/', limiter);
@@ -64,16 +62,16 @@ app.use(
   })
 );
 
-// Health check with caching
+// Health check
 app.get('/api/v1/health', cacheMiddleware(60), (_req, res) => {
   logger.info('Health check endpoint called');
   res.json({ message: 'Auth service is healthy!' });
 });
 
-// Mount auth routes under /api/v1 with caching for GET requests
+// Mount auth routes
 app.use('/', cacheMiddleware(), router);
 
-// Swagger docs - only in development
+// Swagger docs
 if (process.env.NODE_ENV !== 'production') {
   app.use(
     '/docs',
