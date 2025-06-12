@@ -14,12 +14,30 @@ import { cacheMiddleware } from './middleware/cache-middleware';
 import logger from './utils/logger';
 import fs from 'fs/promises';
 import csurf from 'csurf';
+import session from 'express-session';
 
 const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(csurf());
+
+// Body parsers
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
+app.use(cookieParser());
+
+// Session middleware
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'supersecret',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: process.env.NODE_ENV === 'production' },
+  })
+);
+
+// CSRF middleware
+app.use(csurf({ cookie: true }));
 
 // Compression middleware
 app.use(compression());
@@ -42,11 +60,6 @@ app.use(
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 );
-
-// Body parsers
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ extended: true, limit: '100mb' }));
-app.use(cookieParser());
 
 // Health check with caching
 app.get('/api/v1/health', cacheMiddleware(60), (_req, res) => {
