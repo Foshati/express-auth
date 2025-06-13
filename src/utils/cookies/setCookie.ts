@@ -1,12 +1,11 @@
-import { Response } from 'express';
+import { CookieOptions, Response } from 'express';
 
-export const setCookie = (res: Response, name: string, value: string) => {
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  res.cookie(name, value, {
+export const setCookie = (res: Response, name: string, value: string, options?: CookieOptions) => {
+  const defaultOptions: CookieOptions = {
     httpOnly: true,
-    secure: isProduction, // Use HTTPS only in production
-    sameSite: isProduction ? 'none' : 'lax', // lax works better in development
-    maxAge: 60 * 60 * 24 * 7, // 7 days
-  });
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+  };
+
+  res.cookie(name, value, { ...defaultOptions, ...options });
 };

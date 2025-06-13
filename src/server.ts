@@ -17,6 +17,7 @@ import swaggerDocument from './swagger-ui/swagger-output.json';
 import session from 'express-session';
 import fs from 'fs';
 import path from 'path';
+import telRouter from './routes/tel.routes';
 
 const app = express();
 
@@ -68,8 +69,9 @@ app.get('/api/v1/health', cacheMiddleware(60), (_req, res) => {
   res.json({ message: 'Auth service is healthy!' });
 });
 
-// Mount auth routes
-app.use('/', cacheMiddleware(), router);
+// routes
+app.use('/', router);
+app.use('/api/v1/tel', cacheMiddleware(), telRouter);
 
 // Swagger docs
 if (process.env.NODE_ENV !== 'production') {

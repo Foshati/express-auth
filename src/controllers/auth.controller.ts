@@ -128,16 +128,18 @@ export const userLogin = async (req: Request, res: Response, next: NextFunction)
     const accessToken = jwt.sign(
       { id: user.id, role: 'user' },
       process.env.ACCESS_TOKEN_SECRET as string,
-      { expiresIn: '15m' }
+      { expiresIn: '1d' } // Expires in 1 day
     );
     const refreshToken = jwt.sign(
       { id: user.id, role: 'user' },
       process.env.REFRESH_TOKEN_SECRET as string,
-      { expiresIn: '7d' }
+      { expiresIn: '30d' } // Expires in 30 days
     );
     // store the refresh token and access token in a http-only secure cookie
-    setCookie(res, 'access_token', accessToken);
-    setCookie(res, 'refresh_token', refreshToken);
+    // Access token cookie expires in 1 day
+    setCookie(res, 'access_token', accessToken, { maxAge: 24 * 60 * 60 * 1000 }); // 1 day in milliseconds
+    // Refresh token cookie expires in 30 days
+    setCookie(res, 'refresh_token', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000 }); // 30 days in milliseconds
 
     res.status(200).json({
       message: 'Login successful',
@@ -181,10 +183,12 @@ export const userRefreshToken = async (req: Request, res: Response, next: NextFu
     const newAccessToken = jwt.sign(
       { id: decoded.id, role: decoded.role },
       process.env.ACCESS_TOKEN_SECRET as string,
-      { expiresIn: '15m' }
+      { expiresIn: '1d' } // Expires in 1 day
     );
 
-    setCookie(res, 'access_token', newAccessToken);
+    // Access token cookie expires in 1 day
+    setCookie(res, 'access_token', newAccessToken, { maxAge: 24 * 60 * 60 * 1000 }); // 1 day in milliseconds
+
     res.status(201).json({
       success: true,
     });
@@ -347,4 +351,11 @@ export const validateField = async (req: Request, res: Response, next: NextFunct
   } catch (error) {
     next(error);
   }
+};
+
+// Logout user
+export const userLogout = (req: Request, res: Response) => {
+  res.clearCookie('access_token');
+  res.clearCookie('refresh_token');
+  res.status(200).json({ success: true, message: 'Logged out successfully' });
 };

@@ -4,6 +4,7 @@ import {
   resendOtp,
   userForgotPassword,
   userLogin,
+  userLogout,
   userRefreshToken,
   userRegistration,
   userResetPassword,
@@ -41,8 +42,11 @@ router.post(
 );
 router.post('/api/v1/auth/reset-password', validate(ResetPasswordSchema), userResetPassword);
 
+// User Logout
+router.post('/api/v1/auth/logout', userLogout);
+
 // User Profile
-router.get('/api/v1/users/me', isAuthenticated as RequestHandler, getUser);
+router.get('/api/v1/user/me', isAuthenticated as RequestHandler, getUser);
 
 // Utilities
 router.post('/api/v1/utils/resend-otp', validate(ResendOtpSchema), resendOtp);
