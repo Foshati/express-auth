@@ -25,7 +25,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@prisma/client": "^6.9.0",
+    "@prisma/client": "^6.10.1",
     "@scalar/express-api-reference": "^0.8.3",
     "@types/csurf": "^1.11.5",
     "@types/express-session": "^1.18.2",
