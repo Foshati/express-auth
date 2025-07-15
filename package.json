@@ -47,7 +47,7 @@
     "nodemailer": "^6.9.7",
     "swagger-autogen": "^2.23.7",
     "winston": "^3.17.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
