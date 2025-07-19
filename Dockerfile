@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # نصب وابستگی‌ها
-RUN npm install
+RUN npm ci --only=production
 
 # کپی بقیه فایل‌های پروژه
 COPY . .
@@ -23,4 +23,5 @@ RUN npm run build
 EXPOSE 8000
 
 # دستور اجرای برنامه
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]
+

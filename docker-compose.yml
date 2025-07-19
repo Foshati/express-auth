@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   auth-service:
     build:
@@ -7,24 +6,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      - NODE_ENV=development
-      - PORT=8000
-      - CLIENT_URL=http://localhost:3000
-    volumes:
-      - .:/app
-      - /app/node_modules
-    command: npm run dev
+    # environment variables از Dokploy تزریق می‌شوند 
+    # اگر با dokploy تزریق نشد باید مقدار زیر را اضافه کرد برای پروژه فایل 
+    #  env_file:
+    #  - .env
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8000/api/v1/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-  # در آینده می‌توان سرویس‌های دیگر مثل Redis را اضافه کرد
-  # redis:
-  #   image: redis:alpine
-  #   ports:
-  #     - "6379:6379" 

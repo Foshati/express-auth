@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "pm2-runtime start dist/server.js --name auth-service",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
@@ -45,6 +45,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.9.7",
+    "pm2": "^5.4.3",
     "swagger-autogen": "^2.23.7",
     "winston": "^3.17.0",
     "zod": "^3.22.4"

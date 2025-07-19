@@ -9,6 +9,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  SELLER
+}
+
 model images {
   id      String  @id @default(auto()) @map("_id") @db.ObjectId
   file_id String
@@ -23,6 +28,7 @@ model User {
   email     String   @unique
   username  String   @unique
   password  String
+  role      Role     @default(SELLER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   images    images?
