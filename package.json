@@ -45,7 +45,7 @@
     "jsonwebtoken": "^9.0.2",
     "node-cache": "^5.1.2",
     "nodemailer": "^6.9.7",
-    "pm2": "^5.4.3",
+    "pm2": "^6.0.9",
     "swagger-autogen": "^2.23.7",
     "winston": "^3.17.0",
     "zod": "^3.22.4"
